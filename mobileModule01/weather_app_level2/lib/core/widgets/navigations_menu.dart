@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:provider/provider.dart';
@@ -16,11 +18,16 @@ class NavigationMenu extends StatelessWidget {
 
     return  Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Row(
             children: [
               Expanded(
                 child: TextField(
                   controller: controller,
+                  onSubmitted: (value) {   // 👈 triggers when pressing Enter
+    Provider.of<NavigationProvider>(context, listen: false)
+        .updateContent(value);
+  },
                   decoration: const InputDecoration(
                     hintText: "Type something...",
                     border: OutlineInputBorder(),
@@ -31,11 +38,13 @@ class NavigationMenu extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: () {
-                  Provider.of<NavigationProvider>(context, listen: false).updateContent(controller.text);
-                },
-                child: const Text("Search"),
-              ),
+  onPressed: () {
+    Provider.of<NavigationProvider>(context, listen: false)
+        .updateContent("geolocation");  // 👈 always set to geolocation
+  },
+  child: const Text("Search"),
+),
+
             ],
           ),
       ),
@@ -94,8 +103,17 @@ class NavigationMenu extends StatelessWidget {
             ],
           ),
         ),
-        body: RoutingHelper.screens[selectedIndex],
-      
+        body: PageView(
+        controller:  context.watch<NavigationProvider>().pageController,
+        onPageChanged:  context.watch<NavigationProvider>().updateBottomNavItemIndex,
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+          },
+        ),
+        children: RoutingHelper.screens,
+      ),
     );
   }
 }

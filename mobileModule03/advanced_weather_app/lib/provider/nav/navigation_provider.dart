@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
-import 'package:medium_weather_app_03/models/weather_models.dart';
-import 'package:medium_weather_app_03/services/geocording_service.dart';
+import 'package:advanced_weather_app/models/weather_models.dart';
+import 'package:advanced_weather_app/services/geocording_service.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:medium_weather_app_03/services/weather_service.dart';
+import 'package:advanced_weather_app/services/weather_service.dart';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 

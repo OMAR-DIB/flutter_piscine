@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:advanced_weather_app/services/geocording_service.dart';
 import 'package:provider/provider.dart';
 import 'package:advanced_weather_app/core/themes/light_theme.dart';
 import 'package:advanced_weather_app/provider/nav/navigation_provider.dart';
@@ -26,59 +25,73 @@ class _NavigationMenuState extends State<NavigationMenu> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Row(
-          children: [
-            Expanded(
-              child: TextField(
-                controller: controller,
-                onChanged: (value) {
-                  context.read<NavigationProvider>().searchCity(value);
-                },
-                onSubmitted: (value) async {
-                  final provider = context.read<NavigationProvider>();
-                  // Fetch suggestions if user presses enter without typing fully
-                  await provider.searchCity(value);
-                  if (provider.citySuggestions.isNotEmpty) {
-                    // 👌 Choose first valid suggestion automatically
-                    provider.selectCitySuggestion(
-                      provider.citySuggestions.first,
-                    );
+        elevation: 0,
+        toolbarHeight: 60, // Make it a bit taller
+        title: Padding(
+          padding: const EdgeInsets.only(top: 6.0), // 👈 modest padding on top
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  onChanged: (value) {
+                    context.read<NavigationProvider>().searchCity(value);
+                  },
+                  onSubmitted: (value) async {
+                    final provider = context.read<NavigationProvider>();
+                    await provider.searchCity(value);
 
-                    // Show chosen name in text field
-                    final chosenCity = provider.citySuggestions.first;
-                    controller.text = chosenCity['name'];
-                  } else {
-
-                    controller.clear();
-                    provider.clearCity();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          "No such city found. Choose a valid location.",
+                    if (provider.citySuggestions.isNotEmpty) {
+                      provider.selectCitySuggestion(
+                        provider.citySuggestions.first,
+                      );
+                      controller.text = provider.citySuggestions.first['name'];
+                    } else {
+                      controller.clear();
+                      provider.clearCity();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "No such city found. Choose a valid location.",
+                          ),
+                          duration: Duration(seconds: 2),
                         ),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
+                      );
+                    }
+                  },
 
-                decoration: const InputDecoration(
-                  hintText: "Search location...",
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
+                  decoration: InputDecoration(
+                    hintText: "Search location...",
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 20,
+                    ), // 👈 search icon
+                    contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    isDense: true,
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12), // 👈 rounded
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 8),
-            IconButton(
-              icon: const Icon(Icons.my_location),
-              onPressed: () {
-                context.read<NavigationProvider>().getCurrentLocation();
-              },
-            ),
-          ],
+              const SizedBox(width: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.my_location, size: 22),
+                  onPressed: () {
+                    context.read<NavigationProvider>().getCurrentLocation();
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
 
